@@ -5,15 +5,13 @@
 .. moduleauthor:: Outernet Inc <hello@outernet.is>
 """
 
-import re
 import gettext
 import functools
 from warnings import warn
 
 from bottle import request, redirect, BaseTemplate, template, DictMixin
 
-from .lazy import lazy, caching_lazy
-from .common import unicode
+from .lazy import lazy
 
 
 CONTEXT_SEPARATOR = '\x04'
@@ -222,7 +220,7 @@ def i18n_view(tpl_base_name=None, **defaults):
             try:
                 locale = request.locale
                 tpl_name = '%s_%s' % (tpl_base_name, locale.lower())
-            except AttributeError as err:
+            except AttributeError:
                 tpl_name = tpl_base_name
             tplvars = defaults.copy()
             result = func(*args, **kwargs)
@@ -352,6 +350,7 @@ class I18NPlugin(object):
                 warn(I18NWarning("No MO file found for '%s' locale" % locale))
             self.gettext_apis[locale] = api
 
+        # Provide translation methods to templates
         BaseTemplate.defaults.update({
             '_': lazy_gettext,
             'gettext': lazy_gettext,
@@ -389,15 +388,26 @@ class I18NPlugin(object):
         def wrapper(*args, **kwargs):
             request.original_path = request.environ.get('ORIGINAL_PATH',
                                                         request.fullpath)
+            query_string = request.environ.get('QUERY_STRING')
+            if query_string:
+                request.original_path = '{0}?{1}'.format(request.original_path,
+                                                         query_string)
+
             if not ignored:
                 request.default_locale = self.default_locale
                 request.locale = locale = request.environ.get('LOCALE')
                 if locale not in self.locales:
                     # If no locale had been specified, redirect to default one
                     path = request.original_path
-                    redirect(unicode(i18n_path(path, self.default_locale)))
+                    redirect(i18n_path(path, self.default_locale))
                 else:
                     request.gettext = self.gettext_apis[locale]
+            else:
+                # Dummy translation is used for paths which are excepted from
+                # i18n plugin.
+                request.gettext = gettext.NullTranslations()
+                request.locale = self.default_locale
+
             return callback(*args, **kwargs)
         return wrapper
 
