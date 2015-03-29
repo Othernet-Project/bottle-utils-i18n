@@ -196,6 +196,26 @@ def i18n_path(path=None, locale=None):
     return '/{}{}'.format(locale.lower(), path)
 
 
+@lazy
+def i18n_url(route, **params):
+    """
+    Return a named route in localized form
+
+    This function is a light wrapper around Bottle's ``get_url()`` function. It
+    passes the result to :py:func:`~bottle_utils.i18n.i18n_path`.
+
+    If ``locale`` keyword argument is passed, it will be used instead of the
+    currently selected locale.
+
+    :param route:   name of the route
+    :returns:       localized path for the specified route
+    """
+    locale = params.pop('locale', request.locale)
+    path = request.app.get_url(route, **params)
+    return i18n_path(path, locale=locale)
+
+
+
 def i18n_view(tpl_base_name=None, **defaults):
     """
     Renders a template with locale name as suffix. Unlike the normal view

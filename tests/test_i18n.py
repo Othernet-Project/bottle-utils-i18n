@@ -135,6 +135,35 @@ def test_i18n_current_path(request):
     assert s == '/en_us/foo/bar/baz?foo=bar', "Should return localized path"
 
 
+def test_i18n_url_returns_lazy():
+    s = mod.i18n_url('foo', bar=2)
+    assert is_lazy(s), "Should be a lazy object"
+
+
+@mock.patch(MOD + 'request')
+@mock.patch(MOD + 'i18n_path')
+def test_i18n_path_calls_get_url(i18n_path, request):
+    s = mod.i18n_url('foo', bar=2)
+    s._eval()
+    request.app.get_url.assert_called_once_with('foo', bar=2)
+
+
+@mock.patch(MOD + 'request')
+def test_i18n_url_prefixes_get_url_results(request):
+    request.app.get_url.return_value = '/foo/2/'
+    request.locale = 'en'
+    s = mod.i18n_url('foo', bar=2)
+    assert s == '/en/foo/2/'
+
+
+@mock.patch(MOD + 'request')
+def test_i18n_url_locale_override(request):
+    request.app.get_url.return_value = '/foo/2/'
+    request.locale = 'en'
+    s = mod.i18n_url('foo', bar=2, locale='es')
+    assert s == '/es/foo/2/'
+
+
 def test_api_version():
     assert mod.I18NPlugin.api == 2, "Should be version 2"
 
