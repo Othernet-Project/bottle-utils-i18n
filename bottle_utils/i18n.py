@@ -306,7 +306,8 @@ class I18NPlugin(object):
     The plugin reads the ``LOCALE`` key set by the middleware, and aliases the
     API for that locale as ``request.gettext``. It also sets ``request.locale``
     attribute to the selected locale. These attributes are used by the
-    ``lazy_gettext`` and ``lazy_ngettext``, as well as ``i18n_path`` functions.
+    ``lazy_gettext`` and ``lazy_ngettext``, as well as ``i18n_path`` and
+    ``i18n_url`` functions.
 
     The plugin installation during initialization can be competely suppressed,
     if you wish (e.g., you wish to apply the plugin yourself some other way).
@@ -378,6 +379,7 @@ class I18NPlugin(object):
             'pgettext': lazy_pgettext,
             'npgettext': lazy_npgettext,
             'i18n_path': i18n_path,
+            'i18n_url': i18n_url,
             'languages': langs,
         })
 

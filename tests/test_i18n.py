@@ -198,6 +198,7 @@ def test_initialization_update_template_basics(BaseTemplate, translation):
         'pgettext': mod.lazy_pgettext,
         'npgettext': mod.lazy_npgettext,
         'i18n_path': mod.i18n_path,
+        'i18n_url': mod.i18n_url,
         'languages': langs,
     })
 
