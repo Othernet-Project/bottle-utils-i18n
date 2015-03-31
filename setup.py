@@ -8,6 +8,7 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 VERSION = bottle_utils.__version__
+RELEASE = '0.3'
 
 setup(
     name='bottle-utils-i18n',
@@ -23,8 +24,8 @@ setup(
     long_description=read('README.rst'),
     install_requires=[
         'bottle==0.12.7',
-        'bottle-utils-common==%s' % VERSION,
-        'bottle-utils-lazy==%s' % VERSION,
+        'bottle-utils-common~=%s' % RELEASE,
+        'bottle-utils-lazy~=%s' % RELEASE,
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
