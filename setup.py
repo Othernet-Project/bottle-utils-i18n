@@ -3,12 +3,15 @@ from setuptools import setup, find_packages
 
 import bottle_utils
 
+
 def read(fname):
     """ Return content of specified file """
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
+
 VERSION = bottle_utils.__version__
-RELEASE = '0.3'
+MAJOR = '0.3'
+NEXT = '0.4'
 
 setup(
     name='bottle-utils-i18n',
@@ -24,8 +27,8 @@ setup(
     long_description=read('README.rst'),
     install_requires=[
         'bottle==0.12.7',
-        'bottle-utils-common~=%s' % RELEASE,
-        'bottle-utils-lazy~=%s' % RELEASE,
+        'bottle-utils-common >=%s, <%s' % (MAJOR, NEXT),
+        'bottle-utils-lazy >=%s, <%s' % (MAJOR, NEXT),
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
