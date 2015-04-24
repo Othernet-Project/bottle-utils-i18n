@@ -119,17 +119,17 @@ def test_i18n_returns_lazy():
 def test_i18n_path(request):
     request.locale = 'en_US'
     s = mod.i18n_path('/foo')
-    assert s == '/en_us/foo'
+    assert s == '/en_US/foo'
     request.locale = 'es_ES'
     s = mod.i18n_path('/foo')
-    assert s == '/es_es/foo'
+    assert s == '/es_ES/foo'
 
 
 @mock.patch(MOD + 'request')
 def test_i18n_custom_locale(request):
     request.locale = 'en_US'
-    s = mod.i18n_path('/foo', locale='es_es')
-    assert s == '/es_es/foo', "Should return specified locale instead"
+    s = mod.i18n_path('/foo', locale='es_ES')
+    assert s == '/es_ES/foo', "Should return specified locale instead"
 
 
 @mock.patch(MOD + 'request')
@@ -137,7 +137,7 @@ def test_i18n_current_path(request):
     request.fullpath = '/foo/bar/baz'
     request.query_string = 'foo=bar'
     s = mod.i18n_path(locale='en_US')
-    assert s == '/en_us/foo/bar/baz?foo=bar', "Should return localized path"
+    assert s == '/en_US/foo/bar/baz?foo=bar', "Should return localized path"
 
 
 def test_i18n_url_returns_lazy():

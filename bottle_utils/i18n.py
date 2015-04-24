@@ -194,7 +194,7 @@ def i18n_path(path=None, locale=None):
     if not locale:
         # This is a bit unexpected, but it obviously can happen
         return path
-    return '/{}{}'.format(locale.lower(), path)
+    return '/{}{}'.format(locale, path)
 
 
 @lazy
