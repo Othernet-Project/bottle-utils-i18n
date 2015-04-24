@@ -13,6 +13,7 @@ try:
 except ImportError:
     import mock
 
+import pytest
 import bottle_utils.i18n as mod
 
 MOD = 'bottle_utils.i18n.'
@@ -56,19 +57,23 @@ def test_gettext_string():
 
 
 @mock.patch(MOD + 'request')
-def test_lazy_gettext_request(request):
+@mock.patch(MOD + 'to_unicode')
+def test_lazy_gettext_request(to_unicode, request):
     _ = mod.lazy_gettext
     s = _('foo')
     s = s._eval()
-    assert s == request.gettext.gettext.return_value, "Should use gettext"
+    to_unicode.assert_called_once_with(request.gettext.gettext.return_value)
+    assert s == to_unicode.return_value
 
 
 @mock.patch(MOD + 'request')
-def test_lazy_ngettext_request(request):
+@mock.patch(MOD + 'to_unicode')
+def test_lazy_ngettext_request(to_unicode, request):
     _ = mod.lazy_ngettext
     s = _('singular', 'plural', 1)
     s = s._eval()
-    assert s == request.gettext.ngettext.return_value, "Should use ngettext"
+    to_unicode.assert_called_once_with(request.gettext.ngettext.return_value)
+    assert s == to_unicode.return_value
 
 
 @mock.patch(MOD + 'lazy_gettext')
@@ -184,6 +189,7 @@ def test_initialization_attrs(BaseTemplate, translation):
 
     tret = translation.return_value
     assert ret.gettext_apis['foo'] == tret, "Translation API for locale"
+
 
 @mock.patch(MOD + 'gettext.translation')
 @mock.patch(MOD + 'BaseTemplate')

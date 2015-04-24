@@ -12,6 +12,7 @@ from warnings import warn
 from bottle import request, redirect, BaseTemplate, template, DictMixin
 
 from .lazy import lazy
+from .common import to_unicode
 
 
 CONTEXT_SEPARATOR = '\x04'
@@ -92,7 +93,7 @@ def lazy_gettext(message):
     :returns:           lazy proxy object
     """
     gettext = request.gettext.gettext
-    return gettext(message)
+    return to_unicode(gettext(message))
 
 
 @lazy
@@ -110,7 +111,7 @@ def lazy_ngettext(singular, plural, n):
     :returns:           lazy proxy object
     """
     ngettext = request.gettext.ngettext
-    return ngettext(singular, plural, n)
+    return to_unicode(ngettext(singular, plural, n))
 
 
 def lazy_pgettext(context, message):
@@ -152,7 +153,7 @@ def lazy_npgettext(context, singular, plural, n):
     :param n:           count
     :returns:           lazy proxy object
     """
-    singular = '%s%s%s'  % (context, CONTEXT_SEPARATOR, singular)
+    singular = '%s%s%s' % (context, CONTEXT_SEPARATOR, singular)
     plural = '%s%s%s' % (context, CONTEXT_SEPARATOR, plural)
     return lazy_ngettext(singular, plural, n)
 
@@ -213,7 +214,6 @@ def i18n_url(route, **params):
     locale = params.pop('locale', request.locale)
     path = request.app.get_url(route, **params)
     return i18n_path(path, locale=locale)
-
 
 
 def i18n_view(tpl_base_name=None, **defaults):
@@ -407,6 +407,7 @@ class I18NPlugin(object):
             ignored = route.config.get('no_i18n', False)
         except AttributeError:
             ignored = False
+
         def wrapper(*args, **kwargs):
             request.original_path = request.environ.get('ORIGINAL_PATH',
                                                         request.fullpath)
@@ -466,4 +467,3 @@ class I18NPlugin(object):
         :returns:       request path without the locale prefix
         """
         return path[len(locale) + 1:]
-
