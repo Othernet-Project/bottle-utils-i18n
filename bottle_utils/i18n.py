@@ -328,7 +328,6 @@ class I18NPlugin(object):
     :param default_locale:  default locale
     :param locale_dir:      directory containing translations
     :param domain:          the gettext domain
-    :param noplugin:
     """
 
     #: Bottle plugin name
@@ -337,7 +336,7 @@ class I18NPlugin(object):
     api = 2
 
     def __init__(self, app, langs, default_locale, locale_dir,
-                 domain='messages', noplugin=False):
+                 domain='messages'):
         #: The original bottle application object is accessible as ``app``
         #: attribute after initialization.
         self.app = app
@@ -382,17 +381,6 @@ class I18NPlugin(object):
             'i18n_url': i18n_url,
             'languages': langs,
         })
-
-        if noplugin:
-            return
-        try:
-            self.app.install(self)
-        except AttributeError:
-            # It's not strictly necessary to install the plugin automatically
-            # like this, especially if there are other WSGI middleware in the
-            # stack. We should still warn. It may be unintentional.
-            warn(I18NWarning('I18NPlugin: Not a bottle app. Skipping '
-                             'plugin installation.'))
 
     def __call__(self, e, h):
         path = e['PATH_INFO']
