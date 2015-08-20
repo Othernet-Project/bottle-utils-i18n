@@ -211,34 +211,21 @@ def test_initialization_update_template_basics(BaseTemplate, translation):
 
 @mock.patch(MOD + 'gettext.translation')
 @mock.patch(MOD + 'BaseTemplate')
-def test_initialization_install_plugin(BaseTemplate, translation):
+def test_initialization_success(BaseTemplate, translation):
     app = mock.Mock()
     langs = [('foo', 'bar')]
-    ret = mod.I18NPlugin(app, langs, default_locale='foo',
-                         locale_dir='nonexistent')
-    app.install.assert_called_once_with(ret)
-
-
-@mock.patch(MOD + 'gettext.translation')
-@mock.patch(MOD + 'BaseTemplate')
-def test_initialization_no_plugin(BaseTemplate, translation):
-    app = mock.Mock()
-    langs = [('foo', 'bar')]
-    mod.I18NPlugin(app, langs, default_locale='foo',
-                   locale_dir='nonexistent', noplugin=True)
-    assert app.install.called == False, "Should not install the plugin"
+    mod.I18NPlugin(app, langs, default_locale='foo', locale_dir='nonexistent')
 
 
 @mock.patch(MOD + 'gettext.translation')
 @mock.patch(MOD + 'BaseTemplate')
 @mock.patch(MOD + 'warn')
-def test_initialization_wanrn(warn, BaseTemplate, translation):
+def test_initialization_warn(warn, BaseTemplate, translation):
     def raise_os_error(*args, **kwargs):
         raise OSError('lamma crapped itself')
     translation.side_effect = raise_os_error
     app = mock.Mock()
     langs = [('foo', 'bar'), ('bar', 'baz')]
-    mod.I18NPlugin(app, langs, default_locale='foo',
-                   locale_dir='nonexistent', noplugin=True)
+    mod.I18NPlugin(app, langs, default_locale='foo', locale_dir='nonexistent')
     wcc = warn.call_count
     assert wcc == 2, "Should be called 2 times, got %s" % wcc
