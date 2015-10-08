@@ -9,7 +9,12 @@ import gettext
 import functools
 from warnings import warn
 
-from bottle import request, redirect, BaseTemplate, template, DictMixin
+from bottle import (redirect,
+                    request,
+                    response,
+                    template,
+                    BaseTemplate,
+                    DictMixin)
 
 from .lazy import lazy
 from .common import to_unicode
@@ -415,21 +420,23 @@ class I18NPlugin(object):
             if query_string:
                 request.original_path = '{0}?{1}'.format(request.original_path,
                                                          query_string)
-
+            default_locale = request.get_cookie('locale', self.default_locale)
             if not ignored:
-                request.default_locale = self.default_locale
+                request.default_locale = default_locale
                 request.locale = locale = request.environ.get('LOCALE')
+                if locale:
+                    response.set_cookie('locale', locale, path='/')
                 if locale not in self.locales:
                     # If no locale had been specified, redirect to default one
                     path = request.original_path
-                    redirect(i18n_path(path, self.default_locale))
+                    redirect(i18n_path(path, default_locale))
                 else:
                     request.gettext = self.gettext_apis[locale]
             else:
                 # Dummy translation is used for paths which are excepted from
                 # i18n plugin.
                 request.gettext = gettext.NullTranslations()
-                request.locale = self.default_locale
+                request.locale = default_locale
 
             return callback(*args, **kwargs)
         return wrapper
